@@ -1,6 +1,6 @@
 import { CacheKey, CacheTTL } from '@nestjs/cache-manager'
 import { Get, Query } from '@nestjs/common'
-import { merge, omit } from 'es-toolkit/compat'
+import { merge } from 'es-toolkit/compat'
 
 import { ApiController } from '~/common/decorators/api-controller.decorator'
 import { Auth } from '~/common/decorators/auth.decorator'
@@ -213,7 +213,7 @@ export class AggregateController {
     return {
       user,
       seo,
-      url: url ? omit(url, ['adminUrl']) : url,
+      url,
       commentOptions: commentOptions
         ? {
             disableComment: commentOptions.disableComment ?? false,
