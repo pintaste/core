@@ -25,6 +25,9 @@ export const enUS = {
   'ai.articleGrouped.emptyDescription':
     'Generate AI results to see articles here.',
   'ai.articleGrouped.emptyTitle': 'No AI {kind} yet',
+  'ai.articleGrouped.filterAll': 'All',
+  'ai.articleGrouped.filterGenerated': 'Generated',
+  'ai.articleGrouped.filterNotYet': 'Not yet',
   'ai.articleGrouped.inlineEmpty': 'No {kind} for this article yet',
   'ai.articleGrouped.itemCount': '{count} items',
   'ai.articleGrouped.searchEmptyHint': 'Try a different keyword',
@@ -2907,3 +2910,4 @@ export const enUS = {
   'write.weather.sunny': 'Sunny',
   'write.weather.thunderstorm': 'Thunderstorm',
 } satisfies Record<TranslationKey, string>
+
