@@ -227,7 +227,7 @@ export function resolvePiProviderId(provider: {
       return 'openai'
     }
     case 'generic': {
-      return null
+      return endpoint ? 'openai-compat' : null
     }
   }
 }
