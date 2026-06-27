@@ -31,5 +31,8 @@ jobs:
             git stash
             git pull origin master
             pnpm build
+            pnpm -C "apps/admin" run build
+            rm -rf ~/.mx-space/admin
+            cp -r apps/admin/dist ~/.mx-space/admin
             pm2 restart mx-core
             echo "Deployed successfully"
