@@ -469,72 +469,50 @@ export class AiSummaryService implements OnModuleInit {
   async getAllSummariesGrouped(query: GetSummariesGroupedQueryInput) {
     const { page, size } = query
     const search = query.search?.trim()
-    const searchableRefIds = search
-      ? await this.databaseService.findArticleIdsByTitle(search)
-      : undefined
 
-    if (search && searchableRefIds?.length === 0) {
-      return {
-        data: [],
-        pagination: paginationOf(0, page, size),
+    // Paginate over ALL articles first, then join with summaries
+    let allArticles: Awaited<
+      ReturnType<typeof this.databaseService.findAllVisibleArticles>
+    >
+
+    if (search) {
+      const searchableRefIds =
+        await this.databaseService.findArticleIdsByTitle(search)
+      if (searchableRefIds.length === 0) {
+        return { data: [], pagination: paginationOf(0, page, size) }
       }
+      const articleMap =
+        await this.databaseService.getRefArticleMap(searchableRefIds)
+      allArticles = searchableRefIds.map((id) => articleMap[id]).filter(Boolean)
+    } else {
+      allArticles = await this.databaseService.findAllVisibleArticles()
     }
 
-    const grouped = await this.aiSummaryRepository.groupedByRef(
-      page,
-      size,
-      searchableRefIds,
-    )
-    const groupedRefIds = grouped.data
-    const total = grouped.pagination.total
+    const total = allArticles.length
+    const start = (page - 1) * size
+    const pageArticles = allArticles.slice(start, start + size)
 
-    if (groupedRefIds.length === 0) {
-      const allArticles = await this.databaseService.findAllVisibleArticles()
-      const articleTotal = allArticles.length
-      const start = (page - 1) * size
-      return {
-        data: allArticles
-          .slice(start, start + size)
-          .map((article) => ({ article, summaries: [] as AISummaryModel[] })),
-        pagination: paginationOf(articleTotal, page, size),
-      }
+    if (pageArticles.length === 0) {
+      return { data: [], pagination: paginationOf(total, page, size) }
     }
 
-    // Get all summaries for these refIds
-    const refIds = groupedRefIds.map((g) => g.refId)
+    const refIds = pageArticles.map((a) => a.id)
     const summaries = this.toSummaryDocs(
       await this.aiSummaryRepository.listByRefIds(refIds),
     )
-
-    // Get article info
-    const articleMap = await this.databaseService.getRefArticleMap(refIds)
-
-    // Group summaries by refId
     const summariesByRefId = summaries.reduce(
-      (acc, summary) => {
-        if (!acc[summary.refId]) {
-          acc[summary.refId] = []
-        }
-        acc[summary.refId].push(summary)
+      (acc, s) => {
+        ;(acc[s.refId] ||= []).push(s)
         return acc
       },
       {} as Record<string, AISummaryModel[]>,
     )
 
-    // Build grouped data maintaining the order from aggregation
-    const groupedData = refIds
-      .map((refId: string) => {
-        const article = articleMap[refId]
-        if (!article) return null
-        return {
-          article,
-          summaries: summariesByRefId[refId] || [],
-        }
-      })
-      .filter(Boolean)
-
     return {
-      data: groupedData,
+      data: pageArticles.map((article) => ({
+        article,
+        summaries: summariesByRefId[article.id] || [],
+      })),
       pagination: paginationOf(total, page, size),
     }
   }
@@ -749,3 +727,4 @@ export class AiSummaryService implements OnModuleInit {
     })
   }
 }
+
