@@ -1009,66 +1009,48 @@ export class AiTranslationService
   async getAllTranslationsGrouped(query: GetTranslationsGroupedQueryInput) {
     const { page, size } = query
     const search = query.search?.trim()
-    const searchableRefIds = search
-      ? await this.databaseService.findArticleIdsByTitle(search)
-      : undefined
 
-    if (search && searchableRefIds?.length === 0) {
-      return {
-        data: [],
-        pagination: paginationOf(0, page, size),
+    let allArticles: Awaited<
+      ReturnType<typeof this.databaseService.findAllVisibleArticles>
+    >
+
+    if (search) {
+      const searchableRefIds =
+        await this.databaseService.findArticleIdsByTitle(search)
+      if (searchableRefIds.length === 0) {
+        return { data: [], pagination: paginationOf(0, page, size) }
       }
+      const articleMap =
+        await this.databaseService.getRefArticleMap(searchableRefIds)
+      allArticles = searchableRefIds.map((id) => articleMap[id]).filter(Boolean)
+    } else {
+      allArticles = await this.databaseService.findAllVisibleArticles()
     }
 
-    const grouped = await this.aiTranslationRepository.groupByRefIdPaginated(
-      page,
-      size,
-      searchableRefIds,
-    )
+    const total = allArticles.length
+    const start = (page - 1) * size
+    const pageArticles = allArticles.slice(start, start + size)
 
-    if (grouped.data.length === 0) {
-      const allArticles = await this.databaseService.findAllVisibleArticles()
-      const articleTotal = allArticles.length
-      const start = (page - 1) * size
-      return {
-        data: allArticles
-          .slice(start, start + size)
-          .map((article) => ({ article, translations: [] as AITranslationModel[] })),
-        pagination: paginationOf(articleTotal, page, size),
-      }
+    if (pageArticles.length === 0) {
+      return { data: [], pagination: paginationOf(total, page, size) }
     }
 
-    const refIds = grouped.data.map((g) => g.refId as string)
-    const [translations, articleMap] = await Promise.all([
-      this.aiTranslationRepository.listByRefIds(refIds),
-      this.databaseService.getRefArticleMap(refIds),
-    ])
-
+    const refIds = pageArticles.map((a) => a.id)
+    const translations = await this.aiTranslationRepository.listByRefIds(refIds)
     const translationsByRefId = translations.reduce(
       (acc, trans) => {
-        if (!acc[trans.refId]) {
-          acc[trans.refId] = []
-        }
-        acc[trans.refId].push(trans)
+        ;(acc[trans.refId] ||= []).push(trans)
         return acc
       },
       {} as Record<string, AITranslationModel[]>,
     )
 
-    const groupedData = refIds
-      .map((refId) => {
-        const info = articleMap[refId]
-        if (!info) return null
-        return {
-          article: info,
-          translations: translationsByRefId[refId] || [],
-        }
-      })
-      .filter(Boolean)
-
     return {
-      data: groupedData,
-      pagination: grouped.pagination,
+      data: pageArticles.map((article) => ({
+        article,
+        translations: translationsByRefId[article.id] || [],
+      })),
+      pagination: paginationOf(total, page, size),
     }
   }
 
@@ -1410,3 +1392,4 @@ export class AiTranslationService
     }
   }
 }
+
