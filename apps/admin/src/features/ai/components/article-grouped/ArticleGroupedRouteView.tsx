@@ -14,6 +14,7 @@ import { groupedPageSize } from '../../constants'
 import type { ArticleGroupedRouteContextValue } from './article-grouped-route-context'
 import { ArticleGroupedRouteContext } from './article-grouped-route-context'
 import { ArticleDetailEmptyState } from './ArticleDetailEmptyState'
+import type { ArticleListFilter } from './ArticleListPane'
 import { ArticleListPane } from './ArticleListPane'
 import type { ArticleGroupedConfig } from './types'
 
@@ -47,6 +48,7 @@ export function ArticleGroupedRouteView<TItem>(
 
   const [inputSearch, setInputSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [filter, setFilter] = useState<ArticleListFilter>('all')
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -79,6 +81,13 @@ export function ArticleGroupedRouteView<TItem>(
     () => listQuery.data?.pages.flatMap((page) => page.data) ?? [],
     [listQuery.data],
   )
+
+  const filteredGroups = useMemo(() => {
+    if (filter === 'generated') return groups.filter((g) => g.items.length > 0)
+    if (filter === 'notGenerated')
+      return groups.filter((g) => g.items.length === 0)
+    return groups
+  }, [groups, filter])
 
   const invalidate = async () => {
     await queryClient.invalidateQueries({
@@ -139,7 +148,8 @@ export function ArticleGroupedRouteView<TItem>(
             <ArticleListPane<TItem>
               actions={headerActions}
               config={config}
-              groups={groups}
+              filter={{ value: filter, onChange: setFilter }}
+              groups={filteredGroups}
               hasNextPage={Boolean(listQuery.hasNextPage)}
               isFetchingNextPage={listQuery.isFetchingNextPage}
               isLoading={listQuery.isLoading}
