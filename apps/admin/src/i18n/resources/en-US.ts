@@ -231,6 +231,7 @@ export const enUS = {
   'ai.translation.generateLabel': 'Generate translation',
   'ai.translation.kind': 'translation',
   'ai.translation.langLabel': 'Target language',
+  'ai.translation.langSearch': 'Search language...',
   'ai.translation.listSectionTitle': 'Translation list',
   'ai.translation.searchPlaceholder': 'Search by article title',
   'ai.translation.title': 'Translation entries',
@@ -2910,4 +2911,5 @@ export const enUS = {
   'write.weather.sunny': 'Sunny',
   'write.weather.thunderstorm': 'Thunderstorm',
 } satisfies Record<TranslationKey, string>
+
 
