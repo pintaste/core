@@ -223,6 +223,7 @@ export const zhCN = {
   'ai.translation.generateLabel': '生成翻译',
   'ai.translation.kind': '翻译',
   'ai.translation.langLabel': '目标语言',
+  'ai.translation.langSearch': '搜索语言...',
   'ai.translation.listSectionTitle': '翻译列表',
   'ai.translation.searchPlaceholder': '输入文章标题关键词',
   'ai.translation.title': '翻译词表',
@@ -2781,4 +2782,5 @@ export const zhCN = {
   'write.weather.sunny': '晴',
   'write.weather.thunderstorm': '雷雨',
 } as const
+
 
