@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import { toast } from 'sonner'
 
@@ -26,6 +26,7 @@ export function ArticleGroupedDetailRoute<TItem>() {
   const { config } = ctx
 
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [pollForResult, setPollForResult] = useState(false)
 
   const detailQuery = useQuery({
     enabled: Boolean(id),
@@ -34,6 +35,7 @@ export function ArticleGroupedDetailRoute<TItem>() {
       group: config.groupedQueryKey,
       id: id ?? '',
     }),
+    refetchInterval: pollForResult ? 3000 : false,
   })
 
   const detailArticle: ArticleInfo | null = useMemo(() => {
@@ -66,6 +68,12 @@ export function ArticleGroupedDetailRoute<TItem>() {
   }, [config.groupedQueryKey, detailQuery.data, id, queryClient])
 
   const detailItems: TItem[] = detailQuery.data?.items ?? []
+
+  useEffect(() => {
+    if (pollForResult && detailItems.length > 0) {
+      setPollForResult(false)
+    }
+  }, [detailItems.length, pollForResult])
 
   useDocumentTitle(detailArticle?.title)
 
@@ -100,6 +108,7 @@ export function ArticleGroupedDetailRoute<TItem>() {
       toast.success(
         result.created ? t('ai.toast.taskCreated') : t('ai.toast.taskExists'),
       )
+      setPollForResult(true)
       await ctx.invalidate()
     },
   })
@@ -211,3 +220,4 @@ export function ArticleGroupedDetailRoute<TItem>() {
 }
 
 export default ArticleGroupedDetailRoute
+
