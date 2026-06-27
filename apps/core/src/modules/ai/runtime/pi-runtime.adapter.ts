@@ -145,6 +145,7 @@ export class PiRuntimeAdapter implements IModelRuntime {
   private readonly piProviderId: string
   private readonly model: Model<Api>
   private readonly apiKey: string
+  private readonly endpoint?: string
 
   constructor(config: PiRuntimeAdapterConfig) {
     this.providerInfo = {
@@ -153,6 +154,7 @@ export class PiRuntimeAdapter implements IModelRuntime {
       model: config.model,
     }
     this.apiKey = config.apiKey
+    this.endpoint = config.endpoint
     this.api = providerTypeToApi(config.providerType)
     this.piProviderId = deriveProviderId(config.endpoint, config.providerType)
     this.model = this.resolveModel(
@@ -573,14 +575,37 @@ export class PiRuntimeAdapter implements IModelRuntime {
   async listModels(): Promise<ModelInfo[]> {
     try {
       const models = getModels(this.piProviderId as never) as Model<Api>[]
-      return models.map((m) => ({ id: m.id, name: m.name }))
+      if (models.length > 0) {
+        return models.map((m) => ({ id: m.id, name: m.name }))
+      }
     } catch (error) {
       this.logger.warn(
         `pi getModels failed for provider ${this.piProviderId}: ${
           (error as Error).message
         }`,
       )
-      return []
     }
+
+    if (this.endpoint) {
+      try {
+        const url = `${this.endpoint.replace(/\/$/, '')}/v1/models`
+        const res = await fetch(url, {
+          headers: { Authorization: `Bearer ${this.apiKey}` },
+        })
+        if (res.ok) {
+          const json = (await res.json()) as { data?: Array<{ id: string }> }
+          return (json.data ?? []).map((m) => ({ id: m.id, name: m.id }))
+        }
+        this.logger.warn(`HTTP model list returned ${res.status} from ${url}`)
+      } catch (httpError) {
+        this.logger.warn(
+          `HTTP model list from ${this.endpoint} failed: ${
+            (httpError as Error).message
+          }`,
+        )
+      }
+    }
+
+    return []
   }
 }
