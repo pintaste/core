@@ -42,8 +42,7 @@ export class PageProxyService {
       WEB_URL: webUrl,
     }
 
-    const baseApiUrl =
-      BASE_API || `location.origin + '${!isDev ? `/api/v${API_VERSION}` : ''}'`
+    const baseApiUrl = BASE_API || `https://api.pinw.ca/api/v${API_VERSION}`
 
     const gatewayUrl = GATEWAY || 'location.origin'
 
@@ -102,7 +101,6 @@ export class PageProxyService {
     const url = config.url
 
     return {
-      BASE_API: isDev ? '/' : `/api/v${API_VERSION}`,
       GATEWAY: url.wsUrl,
     }
   }

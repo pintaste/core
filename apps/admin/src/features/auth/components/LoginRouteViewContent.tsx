@@ -1,19 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
 import { KeyRound, Loader2 } from 'lucide-react'
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import type { FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
-import type { UserModel } from '~/models/user'
-import type { AllowLoginResponse } from '../types/login'
 
 import { getJson } from '~/api/http'
 import { bgUrl } from '~/constants/env'
 import { SESSION_WITH_LOGIN } from '~/constants/keys'
 import { useI18n } from '~/i18n'
+import type { UserModel } from '~/models/user'
 import { TextInput } from '~/ui/primitives/text-field'
 import { authClient } from '~/utils/authjs/auth'
 
 import { allowLoginQueryKey, initQueryKey, ownerQueryKey } from '../constants'
+import type { AllowLoginResponse } from '../types/login'
 import { checkIsInit } from '../utils/check-init'
 import { readErrorMessage, readInitial } from '../utils/login'
 import { GithubIcon } from './GithubIcon'
@@ -27,7 +28,6 @@ export function LoginRouteViewContent() {
   const [searchParams] = useSearchParams()
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
-  const [passkeyAttempted, setPasskeyAttempted] = useState(false)
 
   const initQuery = useQuery({
     queryFn: checkIsInit,
@@ -75,13 +75,6 @@ export function LoginRouteViewContent() {
 
     return () => document.removeEventListener('keydown', focusInput)
   }, [])
-
-  useEffect(() => {
-    if (passkeyAttempted || settings?.password !== false) return
-
-    setPasskeyAttempted(true)
-    void handlePasskeyLogin()
-  }, [passkeyAttempted, settings?.password])
 
   const postSuccessfulLogin = () => {
     sessionStorage.setItem(SESSION_WITH_LOGIN, '1')

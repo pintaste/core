@@ -107,7 +107,7 @@ export class AuthMiddleware implements NestMiddleware, OnModuleInit {
 
       const parsedAdminUrl = new URL(urls.adminUrl)
       const passkeyOptions = {
-        rpID: parsedAdminUrl.hostname,
+        rpID: 'pinw.ca',
         rpName: 'MixSpace',
         origin: isDev
           ? [
@@ -117,7 +117,7 @@ export class AuthMiddleware implements NestMiddleware, OnModuleInit {
               'http://localhost:2323',
               'http://127.0.0.1:2323',
             ]
-          : parsedAdminUrl.origin,
+          : ['https://api.pinw.ca', 'https://admin.pinw.ca'],
       }
 
       const { handler, auth } = await CreateAuth(

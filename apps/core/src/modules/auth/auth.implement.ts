@@ -148,6 +148,9 @@ export async function CreateAuth(
       },
     },
     session: {
+      cookieOptions: {
+        domain: '.pinw.ca',
+      },
       additionalFields: {
         provider: {
           type: 'string',

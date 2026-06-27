@@ -242,6 +242,11 @@ export const CROSS_DOMAIN = {
 
         'localhost:9528',
         'localhost:2323',
+
+        'pinw.ca',
+        '*.pinw.ca',
+        'api.pinw.ca',
+        'admin.pinw.ca',
       ],
 
   // allowedReferer: 'innei.ren',
