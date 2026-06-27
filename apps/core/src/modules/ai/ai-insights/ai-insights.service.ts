@@ -455,9 +455,14 @@ export class AiInsightsService implements OnModuleInit {
     const groupedRefIds = grouped.data
     const total = grouped.pagination.total
     if (!groupedRefIds.length) {
+      const allArticles = await this.databaseService.findAllVisibleArticles()
+      const articleTotal = allArticles.length
+      const start = (page - 1) * size
       return {
-        data: [],
-        pagination: paginationOf(0, page, size),
+        data: allArticles
+          .slice(start, start + size)
+          .map((article) => ({ article, insights: [] as AIInsightsModel[] })),
+        pagination: paginationOf(articleTotal, page, size),
       }
     }
 
