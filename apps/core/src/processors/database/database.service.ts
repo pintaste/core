@@ -141,6 +141,15 @@ export class DatabaseService {
     return { posts: pick(posts), notes: pick(notes), pages: pick(pages) }
   }
 
+  public async findAllVisibleArticles(): Promise<RefArticleInfo[]> {
+    const { posts, notes, pages } = await this.findAllArticlesForTranslation()
+    return [
+      ...posts.map((p) => ({ ...p, type: CollectionRefTypes.Post })),
+      ...notes.map((n) => ({ ...n, type: CollectionRefTypes.Note })),
+      ...pages.map((p) => ({ ...p, type: CollectionRefTypes.Page })),
+    ]
+  }
+
   flatCollectionToMap(combinedCollection: IdsCollection) {
     const all = {} as Record<string, PostRow | NoteRow | PageRow | RecentlyRow>
     for (const collection of Object.values(combinedCollection)) {
