@@ -15,6 +15,8 @@ import { ArticleListRow } from './ArticleListRow'
 import { BorderlessSearchInput } from './BorderlessSearchInput'
 import type { ArticleGroup, ArticleGroupedConfig } from './types'
 
+export type ArticleListFilter = 'all' | 'generated' | 'notGenerated'
+
 interface ArticleListPaneProps<TItem> {
   config: ArticleGroupedConfig<TItem>
   search: string
@@ -27,7 +29,20 @@ interface ArticleListPaneProps<TItem> {
   isFetchingNextPage: boolean
   onLoadMore: () => void
   actions?: HeaderAction[]
+  filter?: {
+    value: ArticleListFilter
+    onChange: (value: ArticleListFilter) => void
+  }
 }
+
+const FILTER_OPTIONS: Array<{
+  value: ArticleListFilter
+  labelKey: 'ai.articleGrouped.filterAll' | 'ai.articleGrouped.filterGenerated' | 'ai.articleGrouped.filterNotYet'
+}> = [
+  { value: 'all', labelKey: 'ai.articleGrouped.filterAll' },
+  { value: 'generated', labelKey: 'ai.articleGrouped.filterGenerated' },
+  { value: 'notGenerated', labelKey: 'ai.articleGrouped.filterNotYet' },
+]
 
 export function ArticleListPane<TItem>(props: ArticleListPaneProps<TItem>) {
   const { t } = useI18n()
@@ -100,6 +115,26 @@ export function ArticleListPane<TItem>(props: ArticleListPaneProps<TItem>) {
           <HeaderActions actions={props.actions} />
         ) : null}
       </div>
+
+      {props.filter && (
+        <div className="flex h-9 shrink-0 items-center gap-1 border-b border-border px-3">
+          {FILTER_OPTIONS.map((opt) => (
+            <button
+              className={cn(
+                'rounded px-2 py-0.5 text-xs font-medium transition-colors',
+                props.filter!.value === opt.value
+                  ? 'bg-accent/15 text-accent'
+                  : 'text-fg-subtle hover:text-fg hover:bg-surface-inset',
+              )}
+              key={opt.value}
+              onClick={() => props.filter!.onChange(opt.value)}
+              type="button"
+            >
+              {t(opt.labelKey)}
+            </button>
+          ))}
+        </div>
+      )}
 
       <Scroll className="flex-1" ref={scrollRef}>
         {empty ? (
