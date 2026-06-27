@@ -1027,9 +1027,14 @@ export class AiTranslationService
     )
 
     if (grouped.data.length === 0) {
+      const allArticles = await this.databaseService.findAllVisibleArticles()
+      const articleTotal = allArticles.length
+      const start = (page - 1) * size
       return {
-        data: [],
-        pagination: paginationOf(grouped.pagination.total, page, size),
+        data: allArticles
+          .slice(start, start + size)
+          .map((article) => ({ article, translations: [] as AITranslationModel[] })),
+        pagination: paginationOf(articleTotal, page, size),
       }
     }
 
