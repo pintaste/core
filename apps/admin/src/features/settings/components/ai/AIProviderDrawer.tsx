@@ -271,6 +271,7 @@ function ModelCombobox(props: {
 
   return (
     <Combobox
+      allowsCustomValue
       autoComplete="none"
       disabled={props.disabled}
       inputValue={props.value}
