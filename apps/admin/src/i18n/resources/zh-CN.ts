@@ -22,6 +22,9 @@ export const zhCN = {
   'ai.articleGrouped.confirmDelete': '确定要删除这条{kind}吗？',
   'ai.articleGrouped.emptyDescription': '生成 AI 结果后，文章将在此处显示。',
   'ai.articleGrouped.emptyTitle': '暂无 AI {kind}',
+  'ai.articleGrouped.filterAll': '全部',
+  'ai.articleGrouped.filterGenerated': '已生成',
+  'ai.articleGrouped.filterNotYet': '未生成',
   'ai.articleGrouped.inlineEmpty': '暂无{kind}',
   'ai.articleGrouped.itemCount': '{count} 条',
   'ai.articleGrouped.searchEmptyHint': '试试其他关键词',
@@ -2778,3 +2781,4 @@ export const zhCN = {
   'write.weather.sunny': '晴',
   'write.weather.thunderstorm': '雷雨',
 } as const
+
