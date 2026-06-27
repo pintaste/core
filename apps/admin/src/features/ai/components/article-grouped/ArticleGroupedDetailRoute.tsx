@@ -35,6 +35,7 @@ export function ArticleGroupedDetailRoute<TItem>() {
       group: config.groupedQueryKey,
       id: id ?? '',
     }),
+    staleTime: 0,
     refetchInterval: pollForResult ? 3000 : false,
   })
 
@@ -220,4 +221,5 @@ export function ArticleGroupedDetailRoute<TItem>() {
 }
 
 export default ArticleGroupedDetailRoute
+
 
