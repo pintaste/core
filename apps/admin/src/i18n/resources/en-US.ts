@@ -10,6 +10,7 @@ export const enUS = {
   'ai.action.generate': 'Generate',
   'ai.action.generateEntries': 'Generate entries',
   'ai.action.generateInsights': 'Generate insights',
+  'ai.action.goToInsights': 'View insights',
   'ai.action.generateSummary': 'Generate summary',
   'ai.action.generateTranslation': 'Generate translation',
   'tasks.action.refresh': 'Refresh',
