@@ -152,6 +152,7 @@ export function ArticleGroupedRouteView<TItem>(
               groups={filteredGroups}
               hasNextPage={Boolean(listQuery.hasNextPage)}
               isFetchingNextPage={listQuery.isFetchingNextPage}
+              isError={listQuery.isError}
               isLoading={listQuery.isLoading}
               onLoadMore={() => void listQuery.fetchNextPage()}
               onSearchChange={setInputSearch}
@@ -165,3 +166,4 @@ export function ArticleGroupedRouteView<TItem>(
     </AppPage>
   )
 }
+
