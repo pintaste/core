@@ -73,6 +73,7 @@ export function ArticleGroupedDetailRoute<TItem>() {
   useEffect(() => {
     if (pollForResult && detailItems.length > 0) {
       setPollForResult(false)
+      void ctx.invalidate()
     }
   }, [detailItems.length, pollForResult])
 
