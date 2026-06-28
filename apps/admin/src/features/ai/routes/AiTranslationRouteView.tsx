@@ -76,6 +76,9 @@ export function AiTranslationRouteView() {
         taskTypeForQueue: 'Translation',
       },
 
+      crossModulePath: (article) => `/ai/insights/${article.id}`,
+      crossModuleLabelKey: 'ai.action.goToInsights',
+
       pageActions: ({ invalidate }): HeaderAction[] => [
         {
           kind: 'button',
