@@ -8,6 +8,7 @@ export const zhCN = {
   'ai.action.generate': '生成',
   'ai.action.generateEntries': '生成词表',
   'ai.action.generateInsights': '生成精读',
+  'ai.action.goToInsights': '查看精读',
   'ai.action.generateSummary': '生成摘要',
   'ai.action.generateTranslation': '生成翻译',
   'tasks.action.refresh': '刷新',
