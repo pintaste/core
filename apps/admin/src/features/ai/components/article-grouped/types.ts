@@ -73,6 +73,8 @@ export interface ArticleGroupedConfig<TItem> {
   }
 
   pageActions?: (ctx: { invalidate: () => Promise<void> }) => HeaderAction[]
+  crossModulePath?: (article: ArticleInfo) => string
+  crossModuleLabelKey?: TranslationKey
 
   extraItemActions?: (item: TItem) => ItemAction<TItem>[]
 
