@@ -24,6 +24,8 @@ const createService = () => {
   const databaseService = {
     findGlobalById: vi.fn(),
     getRefArticleMap: vi.fn().mockResolvedValue({}),
+    findAllVisibleArticles: vi.fn(),
+    findArticleIdsByTitle: vi.fn(),
   }
   const configService = { get: vi.fn() }
   const aiService = {}
@@ -80,20 +82,17 @@ describe('AiInsightsService', () => {
 
   it('loads grouped insight article metadata from the PG database service', async () => {
     const { databaseService, repository, service } = createService()
-    repository.groupedByRef.mockResolvedValue({
-      data: [{ refId: 'post-1' }],
-      pagination: { total: 1 },
-    })
+    databaseService.findAllVisibleArticles.mockResolvedValue([
+      { id: 'post-1', title: 'Post', type: CollectionRefTypes.Post },
+    ])
     repository.listByRefIds.mockResolvedValue([row] as any)
-    databaseService.getRefArticleMap.mockResolvedValue({
-      'post-1': { id: 'post-1', title: 'Post', type: CollectionRefTypes.Post },
-    })
 
     await expect(
       service.getAllInsightsGrouped({ page: 1, size: 10 }),
     ).resolves.toMatchObject({
-      data: [{ article: { id: 'post-1', title: 'Post' } }],
-      pagination: { total: 1, currentPage: 1, size: 10 },
+      data: [{ article: { id: 'post-1', title: 'Post' }, insights: [{ id: 'insights-1' }] }],
+      pagination: { total: 1 },
     })
   })
 })
+
