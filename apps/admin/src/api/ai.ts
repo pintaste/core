@@ -281,8 +281,8 @@ export function updateInsights(id: string, data: { content: string }) {
   return patchJson<AIInsights, { content: string }>(`/ai/insights/${id}`, data)
 }
 
-export function createInsightsTask(data: { refId: string }) {
-  return postJson<CreateTaskResponse, { refId: string }>(
+export function createInsightsTask(data: { refId: string; sourceLang?: string }) {
+  return postJson<CreateTaskResponse, { refId: string; sourceLang?: string }>(
     '/ai/insights/task',
     data,
   )
