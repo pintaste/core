@@ -32,6 +32,7 @@ import { AiInFlightService } from '../ai-inflight/ai-inflight.service'
 import type { AiStreamEvent } from '../ai-inflight/ai-inflight.types'
 import { AiTaskService } from '../ai-task/ai-task.service'
 import { AITaskType, type InsightsTaskPayload } from '../ai-task/ai-task.types'
+import { AiTranslationRepository } from '../ai-translation/ai-translation.repository'
 import { AiInsightsRepository } from './ai-insights.repository'
 import type { GetInsightsGroupedQueryInput } from './ai-insights.schema'
 import type { AiInsightsRow } from './ai-insights.types'
@@ -59,6 +60,7 @@ export class AiInsightsService implements OnModuleInit {
     private readonly taskProcessor: TaskQueueProcessor,
     private readonly aiTaskService: AiTaskService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly aiTranslationRepository: AiTranslationRepository,
   ) {}
 
   onModuleInit() {
@@ -76,6 +78,7 @@ export class AiInsightsService implements OnModuleInit {
         await context.updateProgress(0, 'Generating insights', 0, 1)
         const result = await this.generateInsights(
           payload.refId,
+          payload.sourceLang,
           context.incrementTokens,
           context.incrementCost,
         )
@@ -308,6 +311,7 @@ export class AiInsightsService implements OnModuleInit {
 
   async generateInsights(
     articleId: string,
+    sourceLang?: string,
     onToken?: (count?: number) => Promise<void>,
     onCost?: (usd: number) => Promise<void>,
   ): Promise<AIInsightsModel> {
@@ -318,12 +322,28 @@ export class AiInsightsService implements OnModuleInit {
       throw createAppException(AppErrorCode.AI_NOT_ENABLED)
     }
     const { article } = await this.resolveArticleForInsights(articleId)
-    const lang = this.resolveSourceLang(article)
+    let articleForGeneration = article
+    const lang = sourceLang || this.resolveSourceLang(article)
+    if (sourceLang && sourceLang !== article.lang) {
+      const translation = await this.aiTranslationRepository.findByRefAndLang(
+        articleId,
+        sourceLang,
+      )
+      if (translation) {
+        articleForGeneration = {
+          title: translation.title || article.title,
+          text: translation.text,
+          subtitle: translation.subtitle ?? article.subtitle,
+          tags: article.tags,
+          lang: sourceLang,
+        }
+      }
+    }
     try {
       const { result } = await this.runInsightsGeneration(
         articleId,
         lang,
-        article,
+        articleForGeneration,
         onToken,
         onCost,
       )
