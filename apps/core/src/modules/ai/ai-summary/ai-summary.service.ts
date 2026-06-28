@@ -1,5 +1,5 @@
 import { Injectable, Logger, type OnModuleInit } from '@nestjs/common'
-import { OnEvent } from '@nestjs/event-emitter'
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter'
 import removeMdCodeblock from 'remove-md-codeblock'
 
 import { AppErrorCode, createAppException } from '~/common/errors'
@@ -51,6 +51,7 @@ export class AiSummaryService implements OnModuleInit {
     private readonly aiInFlightService: AiInFlightService,
     private readonly taskProcessor: TaskQueueProcessor,
     private readonly aiTaskService: AiTaskService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     this.logger = new Logger(AiSummaryService.name)
   }
@@ -393,7 +394,7 @@ export class AiSummaryService implements OnModuleInit {
       throw createAppException(AppErrorCode.AI_NOT_ENABLED)
     }
 
-    const { document } = await this.resolveArticleForSummary(articleId)
+    const { document, type } = await this.resolveArticleForSummary(articleId)
 
     try {
       const { result } = await this.runSummaryGeneration(
@@ -403,7 +404,14 @@ export class AiSummaryService implements OnModuleInit {
         onToken,
         onCost,
       )
-      return await result
+      const savedDoc = await result
+      this.emitSummaryContentEvent(
+        BusinessEvents.SUMMARY_GENERATED,
+        articleId,
+        type,
+        document,
+      )
+      return savedDoc
     } catch (error) {
       if (error instanceof AppException) {
         throw error
@@ -625,7 +633,14 @@ export class AiSummaryService implements OnModuleInit {
   }
 
   async deleteSummaryInDb(id: string) {
+    const summary = await this.aiSummaryRepository.findById(id)
     await this.aiSummaryRepository.deleteById(id)
+    if (summary) {
+      void this.emitSummaryContentEventById(
+        BusinessEvents.SUMMARY_DELETE,
+        String(summary.refId),
+      )
+    }
   }
 
   @OnEvent(BusinessEvents.POST_DELETE)
@@ -725,6 +740,52 @@ export class AiSummaryService implements OnModuleInit {
       refId: id,
       targetLanguages: outdatedLanguages,
     })
+  }
+
+  private emitSummaryContentEvent(
+    event: BusinessEvents,
+    refId: string,
+    type: CollectionRefTypes.Note | CollectionRefTypes.Post,
+    document: Record<string, any>,
+  ) {
+    if (type === CollectionRefTypes.Note) {
+      this.eventEmitter.emit(event, {
+        refId,
+        refType: 'note',
+        nid: document.nid,
+        slug: document.slug ?? null,
+        topicSlug: document.topic?.slug ?? null,
+      })
+    } else if (type === CollectionRefTypes.Post) {
+      this.eventEmitter.emit(event, {
+        refId,
+        refType: 'post',
+        slug: document.slug,
+      })
+    }
+  }
+
+  private async emitSummaryContentEventById(
+    event: BusinessEvents,
+    refId: string,
+  ) {
+    try {
+      const article = await this.databaseService.findGlobalById(refId)
+      if (!article) return
+      if (
+        article.type === CollectionRefTypes.Note ||
+        article.type === CollectionRefTypes.Post
+      ) {
+        this.emitSummaryContentEvent(
+          event,
+          refId,
+          article.type,
+          article.document as Record<string, any>,
+        )
+      }
+    } catch {
+      // non-critical
+    }
   }
 }
 
