@@ -1,4 +1,4 @@
-import { ArrowLeft, Loader2, Plus } from 'lucide-react'
+import { ArrowLeft, BookOpen, Loader2, Plus } from 'lucide-react'
 import { Link } from 'react-router'
 
 import type { ArticleInfo } from '~/api/ai'
@@ -80,10 +80,20 @@ export function ArticleDetailPane<TItem>(props: ArticleDetailPaneProps<TItem>) {
             {t(props.config.detailSectionTitleKey)}
           </h2>
         </div>
-        <Button onClick={props.onGenerate} type="button" variant="subtle">
-          <GenerateIcon aria-hidden="true" className="size-4" />
-          {t(props.config.generate.labelKey)}
-        </Button>
+        <div className="flex items-center gap-2">
+          {props.config.crossModulePath && (
+            <Link to={props.config.crossModulePath(props.article)}>
+              <Button type="button" variant="ghost">
+                <BookOpen aria-hidden="true" className="size-4" />
+                {t(props.config.crossModuleLabelKey ?? 'ai.action.goToInsights')}
+              </Button>
+            </Link>
+          )}
+          <Button onClick={props.onGenerate} type="button" variant="subtle">
+            <GenerateIcon aria-hidden="true" className="size-4" />
+            {t(props.config.generate.labelKey)}
+          </Button>
+        </div>
       </div>
 
       <Scroll className="flex-1" innerClassName="p-4">
