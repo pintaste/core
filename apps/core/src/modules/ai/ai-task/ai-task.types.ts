@@ -44,6 +44,7 @@ export interface SlugBackfillTaskPayload {
 
 export interface InsightsTaskPayload {
   refId: string
+  sourceLang?: string
   title?: string
   refType?: string
 }
