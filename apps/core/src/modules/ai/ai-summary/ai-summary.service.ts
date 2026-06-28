@@ -761,6 +761,9 @@ export class AiSummaryService implements OnModuleInit {
         refId,
         refType: 'post',
         slug: document.slug,
+        category: document.category?.slug
+          ? { slug: document.category.slug }
+          : undefined,
       })
     }
   }
