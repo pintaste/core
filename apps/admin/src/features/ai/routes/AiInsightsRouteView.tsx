@@ -54,8 +54,9 @@ export function AiInsightsRouteView() {
       generate: {
         labelKey: 'ai.insights.generateLabel',
         icon: Sparkles,
-        promptForLang: false,
-        runTask: ({ refId }) => createInsightsTask({ refId }),
+        promptForLang: true,
+        runTask: ({ refId, lang }) =>
+          createInsightsTask({ refId, sourceLang: lang || undefined }),
         taskTypeForQueue: 'Insights',
       },
 
