@@ -57,6 +57,10 @@ export enum BusinessEvents {
   INSIGHTS_DELETE = 'INSIGHTS_DELETE',
   INSIGHTS_GENERATED = 'INSIGHTS_GENERATED',
 
+  // AI Summary
+  SUMMARY_GENERATED = 'SUMMARY_GENERATED',
+  SUMMARY_DELETE = 'SUMMARY_DELETE',
+
   // util
   CONTENT_REFRESH = 'CONTENT_REFRESH', // Content updated or reset; page needs reload
 
