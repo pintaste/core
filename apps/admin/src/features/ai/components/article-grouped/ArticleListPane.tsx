@@ -1,4 +1,4 @@
-import { Inbox, Loader2 } from 'lucide-react'
+import { AlertCircle, Inbox, Loader2 } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 import type { ArticleInfo } from '~/api/ai'
@@ -25,6 +25,7 @@ interface ArticleListPaneProps<TItem> {
   selectedArticleId: string | null
   onSelectArticle: (article: ArticleInfo) => void
   isLoading: boolean
+  isError?: boolean
   hasNextPage: boolean
   isFetchingNextPage: boolean
   onLoadMore: () => void
@@ -97,6 +98,23 @@ export function ArticleListPane<TItem>(props: ArticleListPaneProps<TItem>) {
 
   const empty = !props.isLoading && props.groups.length === 0
   const hasSearch = props.search.trim().length > 0
+  const activeFilter = props.filter?.value ?? 'all'
+
+  const emptyTitle = (() => {
+    if (props.isError) return t('ai.articleGrouped.loadErrorTitle')
+    if (hasSearch) return t('ai.articleGrouped.searchEmptyTitle')
+    if (activeFilter === 'generated') return t('ai.articleGrouped.filterEmptyGenerated', { kind: t(props.config.kindKey) })
+    if (activeFilter === 'notGenerated') return t('ai.articleGrouped.filterEmptyNotYet', { kind: t(props.config.kindKey) })
+    return t(props.config.emptyTitleKey, { kind: t(props.config.kindKey) })
+  })()
+
+  const emptyDescription = (() => {
+    if (props.isError) return t('ai.articleGrouped.loadError')
+    if (hasSearch) return t('ai.articleGrouped.searchEmptyHint')
+    if (activeFilter === 'generated') return t('ai.articleGrouped.filterEmptyGeneratedHint')
+    if (activeFilter === 'notGenerated') return t('ai.articleGrouped.filterEmptyNotYetHint')
+    return t(props.config.emptyDescriptionKey)
+  })()
 
   return (
     <FocusScope
@@ -139,18 +157,9 @@ export function ArticleListPane<TItem>(props: ArticleListPaneProps<TItem>) {
       <Scroll className="flex-1" ref={scrollRef}>
         {empty ? (
           <ListEmpty
-            description={
-              hasSearch
-                ? t('ai.articleGrouped.searchEmptyHint')
-                : t(props.config.emptyDescriptionKey)
-            }
-            title={
-              hasSearch
-                ? t('ai.articleGrouped.searchEmptyTitle')
-                : t(props.config.emptyTitleKey, {
-                    kind: t(props.config.kindKey),
-                  })
-            }
+            description={emptyDescription}
+            isError={props.isError}
+            title={emptyTitle}
           />
         ) : (
           <>
@@ -185,10 +194,14 @@ export function ArticleListPane<TItem>(props: ArticleListPaneProps<TItem>) {
   )
 }
 
-function ListEmpty(props: { title: string; description: string }) {
+function ListEmpty(props: { title: string; description: string; isError?: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-4 py-16 text-center">
-      <Inbox aria-hidden="true" className="size-8 text-fg-subtle" />
+      {props.isError ? (
+        <AlertCircle aria-hidden="true" className="size-8 text-red-400" />
+      ) : (
+        <Inbox aria-hidden="true" className="size-8 text-fg-subtle" />
+      )}
       <p className="text-sm font-medium text-fg">{props.title}</p>
       <p className="text-xs text-fg-muted">{props.description}</p>
     </div>
