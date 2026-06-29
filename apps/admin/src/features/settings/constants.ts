@@ -29,6 +29,7 @@ type SocialOption =
 
 export const socialOptions: readonly SocialOption[] = [
   { label: 'GitHub', value: 'github' },
+  { label: 'X', value: 'x' },
   { label: 'Weibo', value: 'weibo' },
   { labelKey: 'settings.social.netease', value: 'netease' },
   { labelKey: 'settings.social.bilibili', value: 'bilibili' },
