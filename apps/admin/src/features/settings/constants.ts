@@ -40,6 +40,8 @@ export const socialOptions: readonly SocialOption[] = [
   { label: 'Weibo', value: 'weibo' },
   { labelKey: 'settings.social.netease', value: 'netease' },
   { labelKey: 'settings.social.bilibili', value: 'bilibili' },
+  { label: 'Email', value: 'mail' },
+  { label: 'RSS', value: 'rss' },
 ] as const
 
 export const staticGroupsBefore: SettingsGroupSummary[] = [
