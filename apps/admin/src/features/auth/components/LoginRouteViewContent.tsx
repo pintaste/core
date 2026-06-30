@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { KeyRound, Loader2 } from 'lucide-react'
 import type { FormEvent } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -13,7 +13,12 @@ import type { UserModel } from '~/models/user'
 import { TextInput } from '~/ui/primitives/text-field'
 import { authClient } from '~/utils/authjs/auth'
 
-import { allowLoginQueryKey, initQueryKey, ownerQueryKey } from '../constants'
+import {
+  allowLoginQueryKey,
+  initQueryKey,
+  loggedStatusQueryKey,
+  ownerQueryKey,
+} from '../constants'
 import type { AllowLoginResponse } from '../types/login'
 import { checkIsInit } from '../utils/check-init'
 import { readErrorMessage, readInitial } from '../utils/login'
@@ -25,6 +30,7 @@ export function LoginRouteViewContent() {
   const { t } = useI18n()
   const inputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
@@ -78,6 +84,7 @@ export function LoginRouteViewContent() {
 
   const postSuccessfulLogin = () => {
     sessionStorage.setItem(SESSION_WITH_LOGIN, '1')
+    queryClient.removeQueries({ queryKey: loggedStatusQueryKey })
     toast.success(t('auth.login.welcomeBack'))
     navigate(fromPath, { replace: true })
   }

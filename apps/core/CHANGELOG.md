@@ -1,4 +1,51 @@
-# [13.11.1](https://github.com/mx-space/core/compare/v13.11.0...v13.11.1) (2026-06-19)
+## [13.11.8](https://github.com/mx-space/core/compare/v13.11.7...v13.11.8) (2026-06-28)
+
+
+### Bug Fixes
+
+* **stock:** switch bars source from Twelve Data to Polygon.io ([c72cd47](https://github.com/mx-space/core/commit/c72cd47bdebdf29f75efc728135f77ca117d3c2d))
+
+## [13.11.7](https://github.com/mx-space/core/compare/v13.11.6...v13.11.7) (2026-06-28)
+
+
+### Bug Fixes
+
+* **serverless:** drop fake axios stub, switch built-ins to native fetch ([b34034e](https://github.com/mx-space/core/commit/b34034e3a5ab892b0b6edc6b29f170af54d4b4e2))
+
+## [13.11.6](https://github.com/mx-space/core/compare/v13.11.5...v13.11.6) (2026-06-28)
+
+
+### Bug Fixes
+
+* **stock:** trim Twelve Data apiKey + propagate built-in updates on boot ([888af60](https://github.com/mx-space/core/commit/888af6029759ea353cf1887983dbed742b20567b))
+
+## [13.11.5](https://github.com/mx-space/core/compare/v13.11.4...v13.11.5) (2026-06-28)
+
+
+### Bug Fixes
+
+* **test:** align translation-entry note mock with findDistinctMoodsAndWeathers ([57a623d](https://github.com/mx-space/core/commit/57a623d87419bf568f5cd0513ce1e4cf7b062374))
+
+## [13.11.4](https://github.com/mx-space/core/compare/v13.11.3...v13.11.4) (2026-06-28)
+
+
+### Features
+
+* **stock:** built-in serverless stock_quote + stock_bars + admin Lexical node ([00a8f86](https://github.com/mx-space/core/commit/00a8f86fc1b4cb9a760d94b3df23abc692ba69ab))
+
+## [13.11.3](https://github.com/mx-space/core/compare/v13.11.2...v13.11.3) (2026-06-28)
+
+## [13.11.2](https://github.com/mx-space/core/compare/v13.11.1...v13.11.2) (2026-06-27)
+
+
+### Bug Fixes
+
+* **ai:** honor custom provider endpoints ([29e082a](https://github.com/mx-space/core/commit/29e082ad7ad9092603b8b5c1ead4c4c46c6236fe))
+* **ai:** seed translation glossary from every visible note, not just the last 100 ([49aa04f](https://github.com/mx-space/core/commit/49aa04f17120596f1e29582695a6c9b1aa209cdf)), closes [#2758](https://github.com/mx-space/core/issues/2758)
+* **ai:** surface orphan articles in summary/insights/translation grouped lists ([e51621a](https://github.com/mx-space/core/commit/e51621afd535c8b4c337d00e0ef82b061ed45c91)), closes [#2758](https://github.com/mx-space/core/issues/2758)
+* **recently:** hydrate enrichments on create/update so link cards survive the write path ([0c62e08](https://github.com/mx-space/core/commit/0c62e080680a8442194ea01d61178dba9e397cb4))
+
+## [13.11.1](https://github.com/mx-space/core/compare/v13.11.0...v13.11.1) (2026-06-19)
 
 
 ### Bug Fixes
