@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -77,6 +78,16 @@ export class SayController {
   @Put('/:id')
   @Auth()
   async update(@Param() { id }: EntityIdDto, @Body() body: SayPatchBodyDto) {
+    const row = await this.repository.update(id, body)
+    if (!row) {
+      throw createAppException(AppErrorCode.NOT_FOUND, { id })
+    }
+    return row
+  }
+
+  @Patch('/:id')
+  @Auth()
+  async patch(@Param() { id }: EntityIdDto, @Body() body: SayPatchBodyDto) {
     const row = await this.repository.update(id, body)
     if (!row) {
       throw createAppException(AppErrorCode.NOT_FOUND, { id })
