@@ -31,8 +31,18 @@ jobs:
             git stash
             git pull origin master
             pnpm build
+            # Schema must be current before pm2 restart (boot guard fails otherwise).
+            set -a
+            source /home/ubuntu/mx-core/.env
+            set +a
+            pnpm -C apps/core run migrate
             pnpm -C "apps/admin" run build
             rm -rf ~/.mx-space/admin
             cp -r apps/admin/dist ~/.mx-space/admin
             pm2 restart mx-core
+            # give the process a moment, then fail the job if it crashed
+            sleep 5
+            pm2 describe mx-core | grep -q "status.*online"
+            curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/api/v3/health || \
+              curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/ || true
             echo "Deployed successfully"
