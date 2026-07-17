@@ -1,7 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
+import { resetAllCollections } from '~/data/resource/collection'
 import { useI18n } from '~/i18n'
 import { ModalHeader } from '~/ui/feedback/modal'
 import { present, useModal } from '~/ui/feedback/modal-imperative'
@@ -14,6 +16,7 @@ import { getErrorMessage } from '../../utils/settings'
 function ChangePasswordModal() {
   const { t } = useI18n()
   const modal = useModal<boolean>()
+  const navigate = useNavigate()
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -40,7 +43,8 @@ function ChangePasswordModal() {
       toast.success(t('settings.password.success'))
       modal.close(true)
       await authClient.signOut()
-      window.location.reload()
+      resetAllCollections()
+      navigate('/login')
     },
   })
 

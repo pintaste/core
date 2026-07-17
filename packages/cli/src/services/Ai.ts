@@ -215,8 +215,15 @@ interface CreateTaskEnvelope {
 
 const readCreateTask = (raw: unknown): CreateTaskEnvelope => {
   const inner = asRecord(unwrapData(raw))
+  // Server may emit snake_case (task_id) or camelCase (taskId).
+  const taskId =
+    typeof inner.taskId === 'string'
+      ? inner.taskId
+      : typeof inner.task_id === 'string'
+        ? inner.task_id
+        : undefined
   return {
-    taskId: typeof inner.taskId === 'string' ? inner.taskId : undefined,
+    taskId,
     created: typeof inner.created === 'boolean' ? inner.created : undefined,
   }
 }

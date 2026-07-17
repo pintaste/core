@@ -31,6 +31,7 @@ import {
   TopQueryDto,
 } from './aggregate.schema'
 import { AggregateService } from './aggregate.service'
+import { resolveSeo } from './resolve-seo.util'
 
 type TitledItem = {
   id: string
@@ -212,7 +213,8 @@ export class AggregateController {
 
     return {
       user,
-      seo,
+      // Per-locale SEO overlay (upstream) + keep adminUrl for multi-domain admin (pinw).
+      seo: resolveSeo(seo, lang),
       url,
       commentOptions: commentOptions
         ? {
@@ -234,7 +236,7 @@ export class AggregateController {
     ttl: 10 * 60,
     withQuery: true,
   })
-  async site() {
+  async site(@Lang() lang?: string) {
     const [user, url, seo] = await Promise.all([
       this.ownerService.getOwner(),
       this.configsService.get('url'),
@@ -247,7 +249,7 @@ export class AggregateController {
         name: user.name,
         socialIds: user.socialIds,
       },
-      seo,
+      seo: resolveSeo(seo, lang),
       url: { webUrl: url.webUrl },
     }
   }

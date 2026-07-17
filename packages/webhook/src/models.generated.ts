@@ -55,6 +55,8 @@ export enum BusinessEvents {
   AI_AGENT_CONFIRM_REQUEST = 'AI_AGENT_CONFIRM_REQUEST',
   AI_AGENT_CONFIRM_RESULT = 'AI_AGENT_CONFIRM_RESULT',
   AI_AGENT_SESSION_STATE = 'AI_AGENT_SESSION_STATE',
+  COMPANION_PRESENCE_CHANGED = 'companion.presence.changed',
+  TASK_UPDATE = 'TASK_UPDATE',
 }
 
 export enum EventScope {
@@ -173,6 +175,8 @@ export interface CommentRow {
   ip: string | null
   agent: string | null
   location: string | null
+  isOwnerReply: boolean
+  countryCode: string | null
   createdAt: Date
 }
 
@@ -260,6 +264,10 @@ export type NoteModel = NoteRow & {
   password?: string | null
 }
 
+export type NormalizedNote = Omit<NoteModel, 'password' | 'topic'> & {
+  topic: TopicModel
+}
+
 export interface PageRow {
   id: string
   title: string
@@ -326,6 +334,10 @@ export type PostModel = PostRow & {
   relatedId?: string[]
 }
 
+export type NormalizedPost = Omit<PostModel, 'category'> & {
+  category: CategoryModel
+}
+
 export type RecentlyRefType = `${CollectionRefTypes}` | null
 
 export interface RecentlyRow {
@@ -367,4 +379,36 @@ export interface ReaderModel extends BaseModel {
   displayUsername?: string | null
   image?: string | null
   role?: string
+}
+
+export type PublicLiveDeskStateV2 = {
+  schemaVersion: 2
+  epoch: string
+  revision: number
+  projection: {
+    availability: 'idle' | 'active'
+    updatedAt: string
+    expiresAt: string
+    application: {
+      displayName: string
+      activity: { key: string | null; customLabel: string | null } | null
+      window: { title: string } | null
+      icon: { url: string } | null
+    } | null
+    media: {
+      sessionId: string
+      kind: 'unknown' | 'music' | 'podcast' | 'video'
+      title: string | null
+      artist: string | null
+      album: string | null
+      player: { displayName: string } | null
+      playback: {
+        state: 'playing' | 'paused'
+        durationMs: number | null
+        positionMs: number | null
+        anchorAt: string
+        rate: number
+      }
+    } | null
+  } | null
 }

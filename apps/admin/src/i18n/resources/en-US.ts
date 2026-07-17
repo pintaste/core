@@ -483,6 +483,87 @@ export const enUS = {
   'common.update': 'Update',
   'common.view': 'View',
 
+  'companion.action.refresh': 'Refresh',
+  'companion.action.retry': 'Retry',
+  'companion.devices.confirmDescription':
+    'Revoking “{name}” immediately removes Companion access. The device must be paired again to reconnect.',
+  'companion.devices.confirmTitle': 'Revoke Companion device?',
+  'companion.devices.createdAt': 'Created',
+  'companion.devices.description':
+    'Review paired devices and granted access. The last authenticated request confirms connectivity, not a successful Live Desk publication.',
+  'companion.devices.emptyDescription':
+    'Generate a pairing code and claim it in the macOS client to connect a device.',
+  'companion.devices.emptyTitle': 'No paired devices',
+  'companion.devices.lastSeen': 'Last authenticated request',
+  'companion.devices.loadFailed': 'Failed to load Companion devices.',
+  'companion.devices.loading': 'Loading Companion devices',
+  'companion.devices.never': 'No authenticated request',
+  'companion.devices.paired': 'Paired',
+  'companion.devices.revoke': 'Revoke',
+  'companion.devices.revokeFailed':
+    'The revoke request did not complete cleanly. Device state has been synchronized again.',
+  'companion.devices.revokeSuccess': 'Device access revoked',
+  'companion.devices.revoked': 'Revoked',
+  'companion.devices.revoking': 'Revoking',
+  'companion.devices.title': 'Paired devices ({count})',
+  'companion.liveDesk.application': 'Sanitized application',
+  'companion.liveDesk.description':
+    'Reads the sanitized projection currently served by Core. This is the authoritative signal that a Live Desk report was accepted and published.',
+  'companion.liveDesk.expired': 'Expired',
+  'companion.liveDesk.expiredDescription':
+    'A previous public lease ended or was explicitly cleared.',
+  'companion.liveDesk.expiresAt': 'Lease expires',
+  'companion.liveDesk.live': 'Live',
+  'companion.liveDesk.liveDescription':
+    'Core is currently serving an accepted, unexpired projection.',
+  'companion.liveDesk.loadFailed':
+    'Failed to read the public Live Desk projection.',
+  'companion.liveDesk.loading': 'Loading public Live Desk projection',
+  'companion.liveDesk.noReport': 'No report',
+  'companion.liveDesk.noReportDescription':
+    'Core has not published a Live Desk projection in this epoch.',
+  'companion.liveDesk.notShared': 'Not shared',
+  'companion.liveDesk.publicProjection': 'Public projection',
+  'companion.liveDesk.revision': 'Revision {revision}',
+  'companion.liveDesk.title': 'Live Desk report',
+  'companion.liveDesk.unavailable': 'Unavailable',
+  'companion.liveDesk.updatedAt': 'Last accepted update',
+  'companion.pairing.active': 'Pairing code active',
+  'companion.pairing.codeLabel': 'One-time pairing code',
+  'companion.pairing.copied': 'Pairing code copied',
+  'companion.pairing.copy': 'Copy pairing code',
+  'companion.pairing.copyFailed': 'Could not copy the pairing code',
+  'companion.pairing.create': 'Generate pairing code',
+  'companion.pairing.createFailed': 'Failed to generate a pairing code',
+  'companion.pairing.created': 'Pairing code generated',
+  'companion.pairing.creating': 'Generating',
+  'companion.pairing.description':
+    'Issue a short-lived, one-time Live Desk credential for macOS Companion.',
+  'companion.pairing.empty':
+    'After generating a code, enter it in macOS Companion. A claimed device will appear in the list below.',
+  'companion.pairing.expired': 'Expired',
+  'companion.pairing.expiresAt': 'Valid until {time}',
+  'companion.pairing.expiresIn': 'Expires in {count}s',
+  'companion.pairing.showOnce':
+    'The code is shown only in this page session and cannot be recovered after a refresh. Share it only with a trusted device.',
+  'companion.pairing.title': 'Connect a device',
+  'companion.scope.momentWrite': 'Write Moments',
+  'companion.scope.presenceWrite': 'Write Live Desk',
+  'companion.scope.readingRead': 'Read shared reading',
+  'companion.scope.readingWrite': 'Write shared reading',
+  'companion.status.description':
+    'Companion protocol capabilities and runtime flags reported by this Core instance.',
+  'companion.status.disabled': 'Disabled',
+  'companion.status.enabled': 'Enabled',
+  'companion.status.heartbeat': 'Recommended heartbeat',
+  'companion.status.liveDesk': 'Live Desk',
+  'companion.status.loadFailed': 'Failed to read Companion capabilities.',
+  'companion.status.loading': 'Loading Companion capabilities',
+  'companion.status.minimumClient': 'Minimum client version',
+  'companion.status.presenceSchema': 'Presence protocol',
+  'companion.status.seconds': '{count}s',
+  'companion.status.title': 'Server capability',
+
   'imageUploadPrivacy.dialog.description':
     'This image contains GPS location metadata. Choose whether to preserve the original metadata or remove the location information before upload.',
   'imageUploadPrivacy.dialog.coordinatesTitle': 'GPS coordinates in this image',
@@ -1579,6 +1660,9 @@ export const enUS = {
   'routes.comments.description':
     'Comments, moderation, and reader-facing feedback.',
   'routes.comments.title': 'Comments',
+  'routes.companion.description':
+    'Connect macOS Companion and manage device access.',
+  'routes.companion.title': 'Companion',
   'routes.cron.description':
     'Scheduled task definitions, schedules, and one-off triggers.',
   'routes.cron.title': 'Cron',
@@ -1807,16 +1891,20 @@ export const enUS = {
   'settings.ai.error.fetchModelsFailed': 'Failed to fetch model list',
   'settings.ai.error.testFailed': 'Connection test failed',
   'settings.ai.field.apiKey': 'API Key',
+  'settings.ai.field.appendV1': 'Append /v1 to base URL',
   'settings.ai.field.contextWindow': 'Context window (tokens)',
   'settings.ai.field.defaultModel': 'Default model',
   'settings.ai.field.displayName': 'Display name',
   'settings.ai.field.endpoint': 'Endpoint',
   'settings.ai.field.maxTokens': 'Max output tokens',
+  'settings.ai.field.modelListUrl': 'Model list URL',
   'settings.ai.field.providerType': 'Provider type',
   'settings.ai.placeholder.endpointCompatible':
     'Required, e.g. https://api.deepseek.com',
   'settings.ai.placeholder.endpointDefault':
     'Optional, leave empty for default',
+  'settings.ai.placeholder.modelListUrl':
+    'Optional, e.g. https://generativelanguage.googleapis.com/v1beta/openai/models',
   'settings.ai.placeholder.modelAnthropic': 'e.g. claude-sonnet-4.5',
   'settings.ai.placeholder.modelCompatible': 'e.g. deepseek-chat',
   'settings.ai.placeholder.modelOpenai': 'e.g. gpt-5-mini',
@@ -1876,8 +1964,9 @@ export const enUS = {
     'Use an ISO 639-1 language code (2 letters)',
   'settings.ai.test.languageExists': 'Language {language} already exists',
   'settings.ai.test.placeholder': 'e.g. en, ja, ko',
+  'settings.ai.toast.modelListEmpty': 'No models returned',
   'settings.ai.toast.modelListError': 'Fetch model list: {message}',
-  'settings.ai.toast.modelListUpdated': 'Model list updated',
+  'settings.ai.toast.modelListUpdated': 'Model list updated ({count})',
   'settings.ai.toast.needDefaultModel':
     'Please fill in the default model first',
   'settings.ai.toast.testSuccess': 'Connection works',
@@ -2021,6 +2110,14 @@ export const enUS = {
   'settings.scope.both': 'Universal',
   'settings.scope.note': 'Note',
   'settings.scope.post': 'Post',
+  'settings.seo.i18n.field.description': 'Description',
+  'settings.seo.i18n.field.keywords': 'Keywords',
+  'settings.seo.i18n.field.title': 'Title',
+  'settings.seo.i18n.hint':
+    'Falls back to the default (Chinese) content when left blank',
+  'settings.seo.tab.ariaLabel': 'SEO content language',
+  'settings.seo.tab.base': 'Chinese (default)',
+  'settings.seo.tab.en': 'English',
   'settings.session.action.revokeOthers': 'Sign out other devices',
   'settings.session.action.viewMore': 'View more ({count} devices)',
   'settings.session.action.viewMoreCollapse': 'Collapse',
@@ -2165,7 +2262,7 @@ export const enUS = {
   'shell.nav.intelligence.description': 'AI, analytics, and data enrichment.',
   'shell.nav.integrations': 'Integrations',
   'shell.nav.integrations.description':
-    'Snippets, webhooks, and Markdown import/export.',
+    'Companion, snippets, webhooks, and Markdown import/export.',
   'shell.nav.system': 'System',
   'shell.nav.system.description': 'Settings and background maintenance.',
   'shell.owner.fallback': 'User',

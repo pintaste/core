@@ -13,6 +13,19 @@ export const SeoSchema = section('SEO', {
   icon: field.halfGrid(z.string().optional(), 'Light icon URL'),
   iconDark: field.halfGrid(z.string().optional(), 'Dark icon URL'),
   keywords: field.array(z.array(z.string()).optional(), 'Keywords'),
+  i18n: field.hidden(
+    z
+      .record(
+        z.string().length(2),
+        z.object({
+          title: z.string().min(1).optional(),
+          description: z.string().min(1).optional(),
+          keywords: z.array(z.string()).optional(),
+        }),
+      )
+      .optional(),
+    'Per-locale SEO overrides',
+  ),
 })
 export class SeoDto extends createZodDto(SeoSchema) {}
 export type SeoConfig = z.infer<typeof SeoSchema>
@@ -689,10 +702,26 @@ const AIProviderConfigSchema = withMeta(
       description:
         'Required for OpenAI-compatible services, e.g. https://api.deepseek.com',
     }),
+    modelListUrl: field.plain(z.string().optional(), 'Model list URL', {
+      description:
+        'Full URL to fetch the model list from (OpenAI format); leave empty to use the built-in registry',
+    }),
+    appendV1: field.toggle(z.boolean().optional(), 'Append /v1 to base URL', {
+      description:
+        'Append /v1 to the endpoint when missing; defaults to enabled',
+    }),
     defaultModel: field.plain(z.string().min(1), 'Default model', {
       description: 'E.g. gpt-4o, deepseek-chat, claude-sonnet-4-20250514',
     }),
     enabled: field.toggle(z.boolean(), 'Enabled'),
+    contextWindow: field.plain(
+      z.number().int().positive().nullish(),
+      'Context window (tokens)',
+    ),
+    maxTokens: field.plain(
+      z.number().int().positive().nullish(),
+      'Max output tokens',
+    ),
   }),
   { title: 'AI provider configuration', 'ui:options': { type: 'hidden' } },
 )

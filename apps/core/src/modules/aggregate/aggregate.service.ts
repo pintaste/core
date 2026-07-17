@@ -187,7 +187,32 @@ export class AggregateService {
       url: `${baseUrl}${this.urlBuilder.build(n as any)}`,
       published_at: pickPublishedAt(n),
     }))
-    return [...pageEntries, ...postEntries, ...noteEntries].sort((a, b) => {
+    // Default locale is unprefixed (`zh`); emit prefixed URLs for other
+    // Yohaku locales so crawlers discover translated pages, not only via hreflang.
+    const nonDefaultLocales = ['en', 'ja', 'ko', 'zh-TW'] as const
+    const expandLocales = (
+      entries: Array<{ url: string; published_at: Date | null }>,
+    ) => {
+      const out: Array<{ url: string; published_at: Date | null }> = []
+      for (const entry of entries) {
+        out.push(entry)
+        if (!baseUrl || !entry.url.startsWith(baseUrl)) continue
+        let pathname = entry.url.slice(baseUrl.length)
+        if (!pathname.startsWith('/')) pathname = `/${pathname}`
+        for (const locale of nonDefaultLocales) {
+          out.push({
+            url: `${baseUrl}/${locale}${pathname}`,
+            published_at: entry.published_at,
+          })
+        }
+      }
+      return out
+    }
+    return expandLocales([
+      ...pageEntries,
+      ...postEntries,
+      ...noteEntries,
+    ]).sort((a, b) => {
       const left = a.published_at?.getTime() ?? 0
       const right = b.published_at?.getTime() ?? 0
       return right - left

@@ -7,12 +7,14 @@ export type AIProviderType = 'anthropic' | 'generic' | 'openai-compatible'
 
 export interface AIProviderConfig {
   apiKey: string
+  appendV1?: boolean
   contextWindow?: number | null
   defaultModel: string
   enabled: boolean
   endpoint?: string
   id: string
   maxTokens?: number | null
+  modelListUrl?: string
   name: string
   type: AIProviderType
 }
@@ -52,6 +54,12 @@ export interface AIConfig {
 export interface AIProviderModel {
   id: string
   name: string
+}
+
+export interface SeoI18nOverlay {
+  description?: string
+  keywords?: string[]
+  title?: string
 }
 
 export type SettingsGroupType = 'account' | 'meta-preset' | 'system' | 'user'

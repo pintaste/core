@@ -1,3 +1,62 @@
+# [13.13.1](https://github.com/mx-space/core/compare/v13.13.0...v13.13.1) (2026-07-17)
+
+
+### Bug Fixes
+
+* **companion:** enable Live Desk by default ([9a22898](https://github.com/mx-space/core/commit/9a22898932cc1ce010e8c024d2401687cc1e60c3))
+
+# [13.13.0](https://github.com/mx-space/core/compare/v13.12.0...v13.13.0) (2026-07-16)
+
+
+### Features
+
+* **companion:** add Live Desk presence platform ([4cf2163](https://github.com/mx-space/core/commit/4cf2163064bb43298d59de3f8f87e5129b018a03))
+
+# [13.12.0](https://github.com/mx-space/core/compare/v13.11.14...v13.12.0) (2026-07-10)
+
+
+### Features
+
+* **aggregate:** resolve seo config per request language ([e8ffa4c](https://github.com/mx-space/core/commit/e8ffa4c31deeb3a581ccc8b265f82ac0ad789356))
+* **configs:** add per-locale seo i18n overlay field ([88a60b1](https://github.com/mx-space/core/commit/88a60b1b54f71b4e3c2b012d270782152626a85c))
+
+## [13.11.14](https://github.com/mx-space/core/compare/v13.11.13...v13.11.14) (2026-07-09)
+
+## [13.11.13](https://github.com/mx-space/core/compare/v13.11.12...v13.11.13) (2026-07-04)
+
+
+### Bug Fixes
+
+* **core:** canonicalize skill snippet paths under sk/ root ([4541eca](https://github.com/mx-space/core/commit/4541ecac919e6a04fd7d781037f0a0fc72ceec82))
+
+## [13.11.12](https://github.com/mx-space/core/compare/v13.11.11...v13.11.12) (2026-07-03)
+
+
+### Bug Fixes
+
+* **core:** stabilize task listing and ai publish hooks ([8bba4da](https://github.com/mx-space/core/commit/8bba4da1b9ffe092a0ba5ba492fcd06db5a3e7e0))
+
+## [13.11.11](https://github.com/mx-space/core/compare/v13.11.10...v13.11.11) (2026-07-03)
+
+
+### Bug Fixes
+
+* **activity:** emit presence record keys verbatim in getPresence ([d366de1](https://github.com/mx-space/core/commit/d366de18b8fa5de867190c2f1b3457be5e6fe8ca))
+
+
+### Features
+
+* **auth:** generate digit-only snowflake ids for auth rows ([2aa0771](https://github.com/mx-space/core/commit/2aa07718348c7084b5bb085e5b51d2866c0ff7fc))
+
+## [13.11.10](https://github.com/mx-space/core/compare/v13.11.9...v13.11.10) (2026-07-02)
+
+## [13.11.9](https://github.com/mx-space/core/compare/v13.11.8...v13.11.9) (2026-07-02)
+
+
+### Bug Fixes
+
+* **ai:** configurable model list URL and /v1 suffix for compat providers ([4d4565b](https://github.com/mx-space/core/commit/4d4565b1f745dd5edec9a2521611c0975759c4bd)), closes [#2761](https://github.com/mx-space/core/issues/2761)
+
 ## [13.11.8](https://github.com/mx-space/core/compare/v13.11.7...v13.11.8) (2026-06-28)
 
 
