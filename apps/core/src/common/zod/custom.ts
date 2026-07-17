@@ -43,6 +43,10 @@ export const zPrefer = z.enum(['lexical']).optional()
 export const zLang = z
   .preprocess(
     (val) => resolveRequestedLanguage(val),
-    z.string().length(2).optional(),
+    // Allow ISO-639-1 (`en`) and product locales like `zh-TW` after normalize.
+    z
+      .string()
+      .regex(/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})?$/, 'Invalid language code')
+      .optional(),
   )
   .optional()
