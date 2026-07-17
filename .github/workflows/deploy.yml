@@ -40,9 +40,20 @@ jobs:
             rm -rf ~/.mx-space/admin
             cp -r apps/admin/dist ~/.mx-space/admin
             pm2 restart mx-core
-            # give the process a moment, then fail the job if it crashed
-            sleep 5
-            pm2 describe mx-core | grep -q "status.*online"
-            curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/api/v3/health || \
-              curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/ || true
+            # Wait for listen; dump logs and fail if still down.
+            ok=0
+            for i in 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20; do
+              if curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/api/v3/aggregate 2>/dev/null \
+                || curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/ 2>/dev/null; then
+                ok=1
+                break
+              fi
+              sleep 3
+            done
+            if [ "$ok" != "1" ]; then
+              echo "mx-core failed healthcheck; recent logs:"
+              pm2 logs mx-core --lines 80 --nostream || true
+              pm2 describe mx-core || true
+              exit 1
+            fi
             echo "Deployed successfully"
