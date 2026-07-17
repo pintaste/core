@@ -1,3 +1,11 @@
+/**
+ * @file lexical-translation-parser.ts
+ * Input: ~/constants/lexical.constant, ~/utils/content.util, ~/utils/lexical-translatable-property.util
+ * Output: LexicalTranslationResult, parseLexicalForTranslation, PropertySegment, restoreLexicalTranslation, TranslationSegment
+ * Pos: 通用层-lexicaltranslationparser
+ *
+ * 本注释在文件修改时自动更新，同时触发 FOLDER_INDEX 和 PROJECT_INDEX 更新
+ */
 // Lexical translation parser: extract translatable segments from serialized JSON.
 // Uses blacklist-based skipping + generalized nested editor detection.
 
@@ -15,7 +23,15 @@ import {
 } from '~/utils/content.util'
 import { extractLexicalTranslatableProperties } from '~/utils/lexical-translatable-property.util'
 
+import {
+  buildCodeCommentPlan,
+  joinCodeTokens,
+} from './code-comment-translation'
+
 const FORMAT_CODE = 16
+
+/** Temporary plan stashed on code-block nodes during translate/restore. */
+const CODE_COMMENT_PLAN_KEY = '__codeCommentPlan'
 
 export interface TranslationSegment {
   id: string
@@ -146,6 +162,47 @@ function extractPollSegments(
   }
 }
 
+/**
+ * Decorator code-block nodes store source in `code` (not children).
+ * Extract only natural-language comments so they get translated while
+ * identifiers / commands stay untouched.
+ */
+function extractCodeBlockCommentSegments(
+  node: any,
+  propertySegments: PropertySegment[],
+  counter: { t: number; p: number },
+  ctx: BlockContext,
+): void {
+  if (typeof node.code !== 'string' || !node.code.trim()) return
+
+  const plan = buildCodeCommentPlan(node.code)
+  if (!plan) return
+
+  node[CODE_COMMENT_PLAN_KEY] = plan
+  for (const token of plan.tokens) {
+    if (!token.isComment) continue
+    // Tag so strategy meta resolves to `code.comment`
+    ;(token as any).__isCodeComment = true
+    propertySegments.push({
+      id: `p_${counter.p++}`,
+      text: token.value,
+      node: token,
+      property: 'value',
+      blockId: ctx.blockId,
+      rootIndex: ctx.rootIndex,
+    })
+  }
+}
+
+function restoreCodeBlockComments(node: any): void {
+  const plan = node?.[CODE_COMMENT_PLAN_KEY] as
+    | { tokens: Array<{ value: string }> }
+    | undefined
+  if (!plan?.tokens?.length) return
+  node.code = joinCodeTokens(plan.tokens as any)
+  delete node[CODE_COMMENT_PLAN_KEY]
+}
+
 // Registry for node types whose translatable text lives in an opaque payload
 // rather than children/whitelisted properties. `extract` replaces the normal
 // walk for that node; `restore` runs over the whole tree after translations
@@ -162,6 +219,11 @@ interface ComplexNodeExtractor {
   restore?: (node: any) => void
 }
 
+const CODE_BLOCK_EXTRACTOR: ComplexNodeExtractor = {
+  extract: extractCodeBlockCommentSegments,
+  restore: restoreCodeBlockComments,
+}
+
 const COMPLEX_NODE_EXTRACTORS: Record<string, ComplexNodeExtractor> = {
   [LEXICAL_CONTEXT_EXCALIDRAW_TYPE]: {
     extract: extractExcalidrawTexts,
@@ -174,6 +236,10 @@ const COMPLEX_NODE_EXTRACTORS: Record<string, ComplexNodeExtractor> = {
   },
   [LEXICAL_CONTEXT_MERMAID_TYPE]: { extract: extractMermaidSegments },
   poll: { extract: extractPollSegments },
+  // Decorator code blocks (blog / Yohaku): { type: 'code-block', code: '...' }
+  'code-block': CODE_BLOCK_EXTRACTOR,
+  // Legacy / test shape may use type 'code' with a `code` string property
+  code: CODE_BLOCK_EXTRACTOR,
 }
 
 function walkNode(

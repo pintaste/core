@@ -1,3 +1,11 @@
+/**
+ * @file lexical-translation.strategy.ts
+ * Input: ../../runtime, ../ai-translation.types, ../ai-translation.types-model, ../lexical-block-reuse, ../lexical-translation-parser, ../reviewer.service, ../translation-meta, ../translation-strategy.interface, ./base-translation-strategy, @nestjs/common, ~/processors/helper/helper.lexical.service, ~/shared/types/content-format.type, ~/utils/content.util
+ * Output: LexicalTranslationStrategy
+ * Pos: UI层-lexicaltranslationstrategy
+ *
+ * 本注释在文件修改时自动更新，同时触发 FOLDER_INDEX 和 PROJECT_INDEX 更新
+ */
 import { Injectable } from '@nestjs/common'
 
 import { LexicalService } from '~/processors/helper/helper.lexical.service'
@@ -634,6 +642,9 @@ export class LexicalTranslationStrategy
     }
     if (prop.property === 'diagram' && prop.node?.type === 'mermaid') {
       return 'mermaid.diagram'
+    }
+    if (prop.node?.__isCodeComment) {
+      return 'code.comment'
     }
     return `property.${prop.property}`
   }

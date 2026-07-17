@@ -46,6 +46,12 @@ Do not merely polish or rewrite the source language. The returned natural-langua
 - Return the full translated diagram source as the string value for that segment key.
 - If preserving syntax is uncertain, return the source diagram unchanged; valid untranslated labels are better than broken Mermaid.
 
+## Code comments
+- Segments tagged with meta "code.comment" are natural-language comments extracted from source code (the marker # / // / -- / ; was stripped).
+- Translate only the comment prose. Do NOT add code, backticks, or comment markers.
+- Keep technical identifiers, commands, flags, paths, and version strings inside the comment when they are code tokens (e.g. leave `gas sw`, `auth.json` intact).
+- Return a plain string for that segment key.
+
 ## Key Completeness (CRITICAL)
 - The "translations" object MUST contain EVERY key from the input "segments" object
 - Do NOT omit any key, even if the value appears untranslatable

@@ -472,12 +472,18 @@ export abstract class BaseTranslationStrategy {
             const normalised = this.normalizeChunkTranslationResponse(
               chunk.final as WriterResult,
             )
-            if (!Value.Check(schema, normalised)) {
+            // Drop extra keys models sometimes invent (notes, nested junk).
+            // Value.Clean mutates; clone first so we keep the raw for logs.
+            const cleaned = Value.Clean(
+              schema,
+              structuredClone(normalised),
+            ) as WriterResult
+            if (!Value.Check(schema, cleaned)) {
               throw new Error(
-                `callWriterStreaming: translation chunk validation failed at ${firstValidationFailure(schema, normalised)}`,
+                `callWriterStreaming: translation chunk validation failed at ${firstValidationFailure(schema, cleaned)}`,
               )
             }
-            final = normalised as WriterResult
+            final = cleaned
           }
           if (chunk.usage?.cost !== undefined) totalCost = chunk.usage.cost
         }
@@ -553,15 +559,19 @@ export abstract class BaseTranslationStrategy {
           validate: false,
         })
         const normalised = this.normalizeChunkTranslationResponse(result.output)
-        if (!Value.Check(schema, normalised)) {
+        const cleaned = Value.Clean(
+          schema,
+          structuredClone(normalised),
+        ) as WriterResult
+        if (!Value.Check(schema, cleaned)) {
           throw new Error(
-            `callWriter: translation chunk validation failed at ${firstValidationFailure(schema, normalised)}`,
+            `callWriter: translation chunk validation failed at ${firstValidationFailure(schema, cleaned)}`,
           )
         }
         if (onCost && result.usage?.cost && result.usage.cost > 0) {
           await onCost(result.usage.cost)
         }
-        return normalised as WriterResult
+        return cleaned
       } catch (error) {
         this.logger.warn(
           `callWriter: structured output failed, falling back to text mode (${
@@ -603,12 +613,16 @@ export abstract class BaseTranslationStrategy {
     const normalisedFallback = this.normalizeChunkTranslationResponse(
       this.parseModelJson<WriterResult>(fullText, 'callWriter'),
     )
-    if (!Value.Check(schema, normalisedFallback)) {
+    const cleanedFallback = Value.Clean(
+      schema,
+      structuredClone(normalisedFallback),
+    ) as WriterResult
+    if (!Value.Check(schema, cleanedFallback)) {
       throw new Error(
-        `callWriter: translation chunk validation failed at ${firstValidationFailure(schema, normalisedFallback)}`,
+        `callWriter: translation chunk validation failed at ${firstValidationFailure(schema, cleanedFallback)}`,
       )
     }
-    return normalisedFallback as WriterResult
+    return cleanedFallback
   }
 
   // Shared reviewer → editor orchestration. Strategy-specific patch
