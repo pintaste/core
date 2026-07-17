@@ -565,7 +565,7 @@ describe('TranslationService', () => {
       const testCases = [
         { input: 'jp', expected: 'ja' },
         { input: 'cn', expected: 'zh' },
-        { input: 'zh-tw', expected: 'zh' },
+        { input: 'zh-tw', expected: 'zh-TW' },
         { input: 'en-gb', expected: 'en' },
         { input: 'pt-br', expected: 'pt' },
       ]

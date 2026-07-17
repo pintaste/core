@@ -385,8 +385,21 @@ export abstract class BaseTranslationStrategy {
     }
 
     const chunkResponse = value as Record<string, unknown>
+    // Schema is `{ sourceLang, translations }` with additionalProperties:false.
+    // Some models (notably ja) emit extra top-level keys (notes/reasoning/ruby…).
+    // Spreading them through would fail Value.Check even when the required
+    // fields are valid — strip unknowns and keep only the contract keys.
+    const extraKeys = Object.keys(chunkResponse).filter(
+      (key) => key !== 'sourceLang' && key !== 'translations',
+    )
+    if (extraKeys.length > 0) {
+      this.logger.warn(
+        `callWriter: stripping unexpected top-level keys from chunk response: ${extraKeys.join(',')}`,
+      )
+    }
+
     return {
-      ...chunkResponse,
+      sourceLang: chunkResponse.sourceLang,
       translations: this.normalizeTranslationTree(
         chunkResponse.translations,
         'callWriter',

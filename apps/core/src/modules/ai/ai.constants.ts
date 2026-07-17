@@ -61,4 +61,5 @@ export const LANGUAGE_CODE_TO_NAME: Record<string, string> = {
   ur: 'Urdu',
   vi: 'Vietnamese',
   zh: 'Chinese',
+  'zh-TW': 'Traditional Chinese',
 }

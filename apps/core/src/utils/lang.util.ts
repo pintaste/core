@@ -7,13 +7,19 @@ const LANGUAGE_ALIAS_TO_CODE: Record<string, string> = {
   'en-nz': 'en',
   'en-ie': 'en',
   'en-za': 'en',
-  // Chinese variants
+  // Chinese variants — keep Hans/Hant distinct.
+  // Frontend locales and AI translation rows use `zh` (简体) vs `zh-TW` (繁體).
+  // Collapsing zh-TW → zh would make Traditional Chinese translations unreachable.
   'zh-cn': 'zh',
   'zh-hans': 'zh',
-  'zh-hant': 'zh',
-  'zh-tw': 'zh',
+  'zh-sg': 'zh',
+  'zh-my': 'zh',
   cn: 'zh',
-  tw: 'zh',
+  'zh-hant': 'zh-TW',
+  'zh-tw': 'zh-TW',
+  'zh-hk': 'zh-TW',
+  'zh-mo': 'zh-TW',
+  tw: 'zh-TW',
   // Japanese/Korean common aliases
   jp: 'ja',
   'ja-jp': 'ja',
