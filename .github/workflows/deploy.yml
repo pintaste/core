@@ -32,10 +32,19 @@ jobs:
             git pull origin master
             pnpm build
             # Schema must be current before pm2 restart (boot guard fails otherwise).
+            # Prefer the built binary (same as docker mx-migrate). Do NOT use
+            # `pnpm -C apps/core run migrate` (vite-node): isCliEntry used to miss
+            # under vite-node and exit 0 without applying migrations.
             set -a
             source /home/ubuntu/mx-core/.env
             set +a
-            pnpm -C apps/core run migrate
+            echo "=== running migrations ==="
+            (
+              cd /home/ubuntu/mx-core/apps/core
+              test -f out/migrate.mjs
+              node out/migrate.mjs
+            )
+            echo "=== migrations finished ==="
             pnpm -C "apps/admin" run build
             rm -rf ~/.mx-space/admin
             cp -r apps/admin/dist ~/.mx-space/admin

@@ -53,7 +53,10 @@ function isCliEntry(): boolean {
   try {
     const here = fileURLToPath(import.meta.url)
     const entry = process.argv[1] ? path.resolve(process.argv[1]) : ''
-    return here === entry
+    if (here === entry) return true
+    // vite-node rewrites import.meta.url; argv still points at the source file.
+    const base = path.basename(entry)
+    return base === 'app-migrate.ts' || base === 'app-migrate.mjs'
   } catch {
     return false
   }
