@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          command_timeout: 10m
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            set -e
+            source $HOME/.bashrc
+            cd /home/ubuntu/mx-core
+            git stash
+            git pull origin master
+            pnpm build
+            # Schema must be current before pm2 restart (boot guard fails otherwise).
+            # Prefer the built binary (same as docker mx-migrate). Do NOT use
+            # `pnpm -C apps/core run migrate` (vite-node): isCliEntry used to miss
+            # under vite-node and exit 0 without applying migrations.
+            set -a
+            source /home/ubuntu/mx-core/.env
+            set +a
+            echo "=== running migrations ==="
+            (
+              cd /home/ubuntu/mx-core/apps/core
+              test -f out/migrate.mjs
+              node out/migrate.mjs
+            )
+            echo "=== migrations finished ==="
+            pnpm -C "apps/admin" run build
+            rm -rf ~/.mx-space/admin
+            cp -r apps/admin/dist ~/.mx-space/admin
+            pm2 restart mx-core
+            # Wait for listen; dump logs and fail if still down.
+            ok=0
+            for i in 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20; do
+              if curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/api/v3/aggregate 2>/dev/null \
+                || curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/ 2>/dev/null; then
+                ok=1
+                break
+              fi
+              sleep 3
+            done
+            if [ "$ok" != "1" ]; then
+              echo "mx-core failed healthcheck; recent logs:"
+              pm2 logs mx-core --lines 80 --nostream || true
+              pm2 describe mx-core || true
+              exit 1
+            fi
+            echo "Deployed successfully"
