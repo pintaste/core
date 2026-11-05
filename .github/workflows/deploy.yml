@@ -1,9 +1,10 @@
 name: Deploy
 
+# NOTE: 公网 22 端口已关闭（安全加固），GitHub Actions 无法 SSH 进服务器，
+# 因此不再在 push 时触发（只会产生失败的红色 X）。日常部署用
+# /home/ubuntu/mx-core/deploy.sh。要恢复自动部署，需让 runner 接入
+# Tailscale（tailscale/github-action + TS_AUTHKEY secret）再把 push 触发加回来。
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
 
 concurrency:
