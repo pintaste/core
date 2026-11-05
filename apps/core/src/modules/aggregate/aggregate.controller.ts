@@ -238,7 +238,7 @@ export class AggregateController {
     const [user, config, latestNoteId, themeConfig] = await Promise.all([
       this.ownerService.getOwner(),
       this.configsService.getConfig(),
-      this.noteService.getLatestNoteId(),
+      this.noteService.getLatestNoteId().catch(() => null),
       this.getThemeConfig(theme, lang),
     ])
     const { url, seo, commentOptions, ai: aiConfig } = config
