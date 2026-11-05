@@ -18,25 +18,29 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
-          command_timeout: 10m
+          command_timeout: 15m
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            set -e
-            source $HOME/.bashrc
+            # appleboy runs this under sh (dash on Ubuntu), so use `.` not `source`.
+            # stderr (incl. set -x trace) is kept on the box for post-mortems.
+            set -ex
+            exec 2>>/home/ubuntu/deploy-ci.log
+            echo "=== deploy start $(date -u +%FT%TZ) ==="
+            if [ -f "$HOME/.bashrc" ]; then . "$HOME/.bashrc" || true; fi
             cd /home/ubuntu/mx-core
-            git stash
+            git stash || true
             git pull origin master
+            git log --oneline -1
             pnpm build
             # Schema must be current before pm2 restart (boot guard fails otherwise).
-            # Prefer the built binary (same as docker mx-migrate). Do NOT use
-            # `pnpm -C apps/core run migrate` (vite-node): isCliEntry used to miss
-            # under vite-node and exit 0 without applying migrations.
+            # Use the built binary (same as docker mx-migrate); `pnpm migrate`
+            # goes through vite-node where isCliEntry used to exit 0 silently.
             set -a
-            source /home/ubuntu/mx-core/.env
+            . /home/ubuntu/mx-core/.env
             set +a
             echo "=== running migrations ==="
             (
@@ -46,14 +50,13 @@ jobs:
             )
             echo "=== migrations finished ==="
             pnpm -C "apps/admin" run build
-            rm -rf ~/.mx-space/admin
-            cp -r apps/admin/dist ~/.mx-space/admin
+            mkdir -p "$HOME/.mx-space/admin"
+            rm -rf "$HOME/.mx-space/admin"/*
+            cp -r apps/admin/dist/. "$HOME/.mx-space/admin"/
             pm2 restart mx-core
-            # Wait for listen; dump logs and fail if still down.
             ok=0
             for i in 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20; do
-              if curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/api/v3/aggregate 2>/dev/null \
-                || curl -fsS -o /dev/null -H 'user-agent: deploy-healthcheck' http://127.0.0.1:2333/ 2>/dev/null; then
+              if curl -fsS -o /dev/null http://127.0.0.1:2333/api/v3/aggregate 2>/dev/null; then
                 ok=1
                 break
               fi
